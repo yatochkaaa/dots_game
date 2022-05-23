@@ -1,25 +1,38 @@
 import Phaser from "phaser";
+import { COLORS } from '../scenes/GameScene';
 
-const COLORS = [
-  '0xFFFF00', // YELLOW
-  '0x0000FF', // BLUE
-  '0x00FF00', // GREEN
-  '0xFF0000', // RED
-  '0x800080', // PURPLE
-];
-
-export default class Dot {
-  constructor(scene, x, y) {
+export default class Dot extends Phaser.GameObjects.Image {
+  constructor(scene, x, y, id, group) {
+    super(scene, x, y, COLORS[id].texture);
     this.scene = scene;
     this.x = x;
     this.y = y;
-    this.color = COLORS[Phaser.Math.Between(0, COLORS.length - 1)];
-    this.init();
+    this.id = id;
+    this.texture = COLORS[id].texture;
+    this.color = COLORS[id].color;
+    this.setInteractive();
+    this.on('pointerdown', this.startDraw, this);
+    this.on('pointerup', this.endDraw, this);
+
+    this.init()
   }
 
   init() {
-   this.scene.add.graphics()
-    .fillCircle(this.x, this.y, 20)
-    .fillStyle(this.color);
+    this.createDot();
+  };
+
+  createDot() {
+    this.scene.add.sprite(this.x, this.y, this.texture);
+  }
+
+  startDraw() {
+    this.scene.drawing = true;
+    this.scene.drawStartX = this.x;
+    this.scene.drawStartY = this.y;
+    this.scene.lineColor = this.color;
+  }
+
+  endDraw() {
+    this.scene.drawing = false;
   }
 }
