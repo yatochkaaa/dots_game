@@ -28,6 +28,8 @@ export default class GameScene extends Phaser.Scene {
     this.drawStartX = 0;
     this.drawStartY = 0;
     this.lineColor = '';
+    this.dotsChain = [];
+
     this.drawLine();
   }
 
@@ -47,14 +49,14 @@ export default class GameScene extends Phaser.Scene {
   }
 
   getDotsPosition() {
-    const offsetX = (this.sys.game.config.width / GRID.COLS) - this.dot.radius;
-    const offsetY = (this.sys.game.config.height / GRID.ROWS) - this.dot.radius;
+    this.gapX = (this.sys.game.config.width / GRID.COLS) - this.dot.radius;
+    this.gapY = (this.sys.game.config.height / GRID.ROWS) - this.dot.radius;
 
-    for (let col = 0; col < GRID.COLS; col++) {
-      for (let row = 0; row < GRID.ROWS; row++) {
+    for (let col = 1; col <= GRID.COLS; col++) {
+      for (let row = 1; row <= GRID.ROWS; row++) {
         const ballId = Phaser.Math.Between(0, COLORS.length - 1);
-        const dotX = offsetX + col * offsetX;
-        const dotY = offsetY + row * offsetY;
+        const dotX = col * this.gapX;
+        const dotY = row * this.gapY;
 
         this.dots.add(new Dot(this, dotX, dotY, ballId, this.dots));
       }
@@ -71,6 +73,10 @@ export default class GameScene extends Phaser.Scene {
         line.moveTo(pointer.x, pointer.y);
         line.lineTo(this.drawStartX, this.drawStartY);
         line.strokePath();
+      }
+
+      if (this.drawing == false) {
+        line.clear();
       }
     });
   }
