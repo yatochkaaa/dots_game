@@ -25,8 +25,10 @@ export default class GameScene extends Phaser.Scene {
     this.getDotsPosition();
 
     this.drawing = false;
+    this.drawStartDot;
     this.drawStartX = 0;
     this.drawStartY = 0;
+    this.connectLines = [];
     this.lineColor = '';
     this.dotsChain = [];
 
@@ -67,17 +69,22 @@ export default class GameScene extends Phaser.Scene {
     const line = this.add.graphics();
 
     this.input.on('pointermove', pointer => {
-      if (pointer.isDown && this.drawing) {
+      if (pointer.isDown && this.drawing && this.drawStartDot) {
+        line.clear();
         line.lineStyle(4, this.lineColor);
         line.beginPath();
         line.moveTo(pointer.x, pointer.y);
-        line.lineTo(this.drawStartX, this.drawStartY);
+        line.lineTo(this.drawStartDot.x, this.drawStartDot.y);
         line.strokePath();
       }
+    })
 
-      if (this.drawing == false) {
-        line.clear();
-      }
-    });
+    this.input.on('pointerup', () => {
+      this.drawing = false;
+      this.dotsChain = [];
+      line.clear();
+      this.connectLines.forEach(connectLine => connectLine.destroy());
+      this.connectLines = [];
+    })
   }
 }
