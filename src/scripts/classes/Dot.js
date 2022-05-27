@@ -2,27 +2,21 @@ import Phaser from "phaser";
 import { COLORS } from '../scenes/GameScene';
 
 export default class Dot extends Phaser.GameObjects.Image {
-  constructor(scene, x, y, id, group) {
+  constructor(scene, x, y, id, col, row) {
     super(scene, x, y, COLORS[id].texture);
     this.scene = scene;
     this.x = x;
     this.y = y;
     this.id = id;
+    this.col = col;
+    this.row = row;
     this.texture = COLORS[id].texture;
     this.color = COLORS[id].color;
     this.setInteractive();
     this.on('pointerdown', this.startDraw, this);
     this.on('pointerover', this.overDotDraw, this);
 
-    this.init()
-  }
-
-  init() {
-    this.createDot();
-  };
-
-  createDot() {
-    this.scene.add.sprite(this.x, this.y, this.texture);
+    this.scene.add.existing(this);
   }
 
   startDraw() {
@@ -38,11 +32,18 @@ export default class Dot extends Phaser.GameObjects.Image {
     if (pointer.isDown && this.scene.drawing) {
       const isSameDot = this.scene.dotsChain.find(dot => dot.x === this.x && dot.y === this.y);
       const isSameTexture = this.texture === this.scene.dotsChain[0].texture ? true : false;
+      const isPreLastDot = this === this.scene.dotsChain[this.scene.dotsChain.length - 2];
 
       if (!isSameDot && isSameTexture && this.isAllowableDistance(this)) {
         this.scene.dotsChain.push(this);
         this.connectDots(pointer, this);
         this.scene.drawStartDot = this;
+      }
+
+      if (isPreLastDot) {
+        this.scene.dotsChain.pop();
+        this.scene.connectLines.pop().destroy();
+        this.scene.drawStartDot = this.scene.dotsChain[this.scene.dotsChain.length - 1];
       }
     }
   }
@@ -69,6 +70,7 @@ export default class Dot extends Phaser.GameObjects.Image {
       connectLine.moveTo(this.scene.drawStartDot.x, this.scene.drawStartDot.y);
       connectLine.lineTo(dot.x, dot.y);
       connectLine.strokePath();
+
       this.scene.connectLines.push(connectLine);
     }
   }
