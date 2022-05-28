@@ -27,17 +27,14 @@ export default class Dot extends Phaser.GameObjects.Image {
     this.scene.add.existing(this);
   }
 
-  startDraw() {
-    this.scene.drawing = true;
+  startDraw() {;
     this.scene.drawStartDot = this;
-    this.scene.drawStartX = this.x;
-    this.scene.drawStartY = this.y;
     this.scene.lineColor = this.color;
     this.scene.dotsChain.push(this);
   }
 
   overDotDraw(pointer) {
-    if (pointer.isDown && this.scene.drawing) {
+    if (pointer.isDown) {
       const isSameDot = this.scene.dotsChain.find(dot => dot.x === this.x && dot.y === this.y);
       const isSameTexture = this.texture === this.scene.dotsChain[0].texture ? true : false;
       const isPreLastDot = this === this.scene.dotsChain[this.scene.dotsChain.length - 2];
@@ -72,7 +69,7 @@ export default class Dot extends Phaser.GameObjects.Image {
   connectDots(pointer, dot) {
     const connectLine = this.scene.add.graphics();
 
-    if (pointer.isDown && this.scene.drawing) {
+    if (pointer.isDown) {
       connectLine.lineStyle(4, this.scene.lineColor);
       connectLine.beginPath();
       connectLine.moveTo(this.scene.drawStartDot.x, this.scene.drawStartDot.y);

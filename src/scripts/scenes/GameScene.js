@@ -24,15 +24,13 @@ export default class GameScene extends Phaser.Scene {
     this.createDots();
     this.getDotsPosition();
 
-    this.drawing = false;
     this.drawStartDot;
-    this.drawStartX = 0;
-    this.drawStartY = 0;
     this.connectLines = [];
     this.lineColor = '';
     this.dotsChain = [];
 
     this.drawLine();
+    this.endDraw();
   }
 
   createBackground() {
@@ -42,11 +40,7 @@ export default class GameScene extends Phaser.Scene {
   createDots() {
     const dotTexture = this.textures.get(COLORS[0].texture).getSourceImage();
 
-    this.dot = {
-      diameter: dotTexture.width,
-      radius: dotTexture.width / 2
-    }
-
+    this.dot = { radius: dotTexture.width / 2 };
     this.dots = this.add.group();
   }
 
@@ -70,7 +64,7 @@ export default class GameScene extends Phaser.Scene {
     const moveLine = this.add.graphics();
 
     this.input.on('pointermove', pointer => {
-      if (pointer.isDown && this.drawing && this.drawStartDot) {
+      if (pointer.isDown && this.drawStartDot) {
         moveLine.clear();
         moveLine.lineStyle(4, this.lineColor);
         moveLine.beginPath();
@@ -80,8 +74,11 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
+    this.input.on('pointerup', () => moveLine.clear())
+  }
+
+  endDraw() {
     this.input.on('pointerup', () => {
-      this.drawing = false;
 
       if (this.dotsChain.length > 1) {
         this.dotsChain.forEach(dot => {
@@ -93,6 +90,7 @@ export default class GameScene extends Phaser.Scene {
           this.dots.children.entries.forEach(groupDot => {
             if (groupDot.col === dotCol && groupDot.row < dotRow) {
               groupDot.row++;
+
               if (groupDot.newY) {
                 groupDot.newY += this.gapY;
               } else {
@@ -116,7 +114,6 @@ export default class GameScene extends Phaser.Scene {
       }
 
       this.dotsChain = [];
-      moveLine.clear();
       this.connectLines.forEach(connectLine => connectLine.destroy()); 
       this.connectLines = [];
     }, this)
