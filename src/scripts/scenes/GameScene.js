@@ -35,29 +35,6 @@ export default class GameScene extends Phaser.Scene {
     this.drawLine();
   }
 
-  // changePos() {
-  //   const newDotYPosition = this.newDotsArr[this.count - 1].newY + 53; 
-
-  //   return newDotYPosition;
-  // };
-
-  // moveDots() {
-  //   this.count = 0;
-
-  //   this.tweens.add({
-  //       onRepeate: () => {
-  //           this.count++;
-  //           this.changePos();
-  //       },
-  //       targets: [...this.dots.children.entries],
-  //       y: this.changePos,
-  //       duration: 1000,
-  //       ease: 'Sine.easeInOut',
-  //       repeat: 0,
-  //       delay: this.tweens.stagger(100),
-  //   });
-  // };
-
   createBackground() {
     this.add.sprite(0, 0, 'bg').setOrigin(0);
   }
@@ -83,9 +60,7 @@ export default class GameScene extends Phaser.Scene {
         const ballId = Phaser.Math.Between(0, COLORS.length - 1);
         const dotX = col * this.gapX;
         const dotY = row * this.gapY;
-
-        const newDotY = dotY + this.gapY;
-        this.newDotsArr.push({ newY: newDotY });
+;
         this.dots.add(new Dot(this, dotX, dotY, ballId, col, row));
       }
     }
@@ -110,9 +85,34 @@ export default class GameScene extends Phaser.Scene {
 
       if (this.dotsChain.length > 1) {
         this.dotsChain.forEach(dot => {
+          const dotRow = dot.row;
+          const dotCol = dot.col;
+
           dot.destroy();
+
+          this.dots.children.entries.forEach(groupDot => {
+            if (groupDot.col === dotCol && groupDot.row < dotRow) {
+              groupDot.row++;
+              if (groupDot.newY) {
+                groupDot.newY += this.gapY;
+              } else {
+                groupDot.newY = groupDot.y + this.gapY;
+              }
+            }
+          });
+
+          this.dots.children.entries.forEach(groupDot => {
+            if (groupDot.newY) {
+              this.tweens.add({
+                targets: groupDot,
+                y: groupDot.newY,
+                duration: 1500,
+                ease: 'Bounce.out',
+                delay: 100
+              });
+            }
+          });
         });
-        console.log(this.dotsChain)
       }
 
       this.dotsChain = [];

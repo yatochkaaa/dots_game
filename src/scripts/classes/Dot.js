@@ -6,7 +6,7 @@ export default class Dot extends Phaser.GameObjects.Image {
     super(scene, x, y, COLORS[id].texture);
     this.scene = scene;
     this.x = x;
-    this.y = y;
+    this.y = -this.scene.sys.game.config.height;
     this.id = id;
     this.col = col;
     this.row = row;
@@ -15,6 +15,14 @@ export default class Dot extends Phaser.GameObjects.Image {
     this.setInteractive();
     this.on('pointerdown', this.startDraw, this);
     this.on('pointerover', this.overDotDraw, this);
+
+    this.scene.tweens.add({
+      targets: this,
+      y,
+      duration: 1500,
+      ease: 'Bounce.out',
+      delay: 250 - this.row * 100
+    });
 
     this.scene.add.existing(this);
   }
