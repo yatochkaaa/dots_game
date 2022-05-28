@@ -19,9 +19,9 @@ export default class Dot extends Phaser.GameObjects.Image {
     this.scene.tweens.add({
       targets: this,
       y,
-      duration: 1500,
+      duration: 1000,
       ease: 'Bounce.out',
-      delay: 250 - this.row * 100
+      delay: -this.row * 100
     });
 
     this.scene.add.existing(this);

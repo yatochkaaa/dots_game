@@ -79,13 +79,20 @@ export default class GameScene extends Phaser.Scene {
 
   endDraw() {
     this.input.on('pointerup', () => {
-
       if (this.dotsChain.length > 1) {
+        let colsToAddDot = {};
+
         this.dotsChain.forEach(dot => {
           const dotRow = dot.row;
           const dotCol = dot.col;
 
           dot.destroy();
+
+          if (colsToAddDot[dotCol]) {
+            colsToAddDot[dotCol] += 1;
+          } else {
+            colsToAddDot[dotCol] = 1;
+          }
 
           this.dots.children.entries.forEach(groupDot => {
             if (groupDot.col === dotCol && groupDot.row < dotRow) {
@@ -104,13 +111,23 @@ export default class GameScene extends Phaser.Scene {
               this.tweens.add({
                 targets: groupDot,
                 y: groupDot.newY,
-                duration: 1500,
+                duration: 500,
                 ease: 'Bounce.out',
                 delay: 100
               });
             }
           });
         });
+
+        for (let colNum in colsToAddDot) {
+          for (let rowNum = colsToAddDot[colNum]; rowNum > 0; rowNum--) {
+            const ballId = Phaser.Math.Between(0, COLORS.length - 1);
+            const dotX = Number(colNum) * this.gapX;
+            const dotY = rowNum * this.gapY;
+
+            this.dots.add(new Dot(this, dotX, dotY, ballId, Number(colNum), rowNum));
+          }
+        }
       }
 
       this.dotsChain = [];
