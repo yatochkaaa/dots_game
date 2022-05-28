@@ -7,7 +7,6 @@ export default class Dot extends Phaser.GameObjects.Image {
     this.scene = scene;
     this.x = x;
     this.y = -this.scene.sys.game.config.height;
-    this.id = id;
     this.col = col;
     this.row = row;
     this.texture = COLORS[id].texture;
@@ -34,7 +33,7 @@ export default class Dot extends Phaser.GameObjects.Image {
   }
 
   overDotDraw(pointer) {
-    if (pointer.isDown) {
+    if (pointer.isDown && this.scene.drawStartDot) {
       const isSameDot = this.scene.dotsChain.find(dot => dot.x === this.x && dot.y === this.y);
       const isSameTexture = this.texture === this.scene.dotsChain[0].texture ? true : false;
       const isPreLastDot = this === this.scene.dotsChain[this.scene.dotsChain.length - 2];

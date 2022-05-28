@@ -7,11 +7,11 @@ const GRID = {
 }
 
 export const COLORS = [
-  { texture: 'yellowDot', color: '0xFFFF00', id: 1 },
-  { texture: 'blueDot', color: '0x00BFFF', id: 2 },
-  { texture: 'greenDot', color: '0x32CD32 ', id: 3 },
-  { texture: 'redDot', color: '0xFF0000', id: 4 },
-  { texture: 'purpleDot', color: '0xDDA0DD', id: 5}
+  { texture: 'yellowDot', color: '0xfdd606', id: 1 },
+  { texture: 'blueDot', color: '0x50c7eb', id: 2 },
+  { texture: 'greenDot', color: '0x0bab35 ', id: 3 },
+  { texture: 'redDot', color: '0xeb2027', id: 4 },
+  { texture: 'purpleDot', color: '0xbb80b7', id: 5}
 ];
 
 export default class GameScene extends Phaser.Scene {
@@ -24,7 +24,7 @@ export default class GameScene extends Phaser.Scene {
     this.createDots();
     this.getDotsPosition();
 
-    this.drawStartDot;
+    this.drawStartDot = null;
     this.connectLines = [];
     this.lineColor = '';
     this.dotsChain = [];
@@ -51,11 +51,10 @@ export default class GameScene extends Phaser.Scene {
 
     for (let col = 1; col <= GRID.COLS; col++) {
       for (let row = 1; row <= GRID.ROWS; row++) {
-        const ballId = Phaser.Math.Between(0, COLORS.length - 1);
+        const dotId = Phaser.Math.Between(0, COLORS.length - 1);
         const dotX = col * this.gapX;
         const dotY = row * this.gapY;
-;
-        this.dots.add(new Dot(this, dotX, dotY, ballId, col, row));
+        this.dots.add(new Dot(this, dotX, dotY, dotId, col, row));
       }
     }
   }
@@ -121,15 +120,16 @@ export default class GameScene extends Phaser.Scene {
 
         for (let colNum in colsToAddDot) {
           for (let rowNum = colsToAddDot[colNum]; rowNum > 0; rowNum--) {
-            const ballId = Phaser.Math.Between(0, COLORS.length - 1);
+            const dotId = Phaser.Math.Between(0, COLORS.length - 1);
             const dotX = Number(colNum) * this.gapX;
             const dotY = rowNum * this.gapY;
 
-            this.dots.add(new Dot(this, dotX, dotY, ballId, Number(colNum), rowNum));
+            this.dots.add(new Dot(this, dotX, dotY, dotId, Number(colNum), rowNum));
           }
         }
       }
 
+      this.drawStartDot = null;
       this.dotsChain = [];
       this.connectLines.forEach(connectLine => connectLine.destroy()); 
       this.connectLines = [];
