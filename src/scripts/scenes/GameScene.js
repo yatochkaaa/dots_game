@@ -23,6 +23,7 @@ export default class GameScene extends Phaser.Scene {
     this.createBackground()
     this.createDots();
     this.getDotsPosition();
+    this.createPoints();
 
     this.drawStartDot = null;
     this.connectLines = [];
@@ -59,6 +60,20 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  createPoints() {
+    this.points = 0;
+    const x = this.sys.game.config.width - this.sys.game.config.width / 7;
+    const y = this.sys.game.config.height / 30;
+    const text = `POINTS: ${this.points}`;
+    const style = {
+      fontFamily: 'Georgia, Times, serif',
+      fontSize: '16px',
+      color: '#fff'
+    };
+
+    this.pointsText = this.add.text(x, y, text, style);
+  }
+
   drawLine() {
     const moveLine = this.add.graphics();
 
@@ -79,7 +94,10 @@ export default class GameScene extends Phaser.Scene {
   endDraw() {
     this.input.on('pointerup', () => {
       if (this.dotsChain.length > 1) {
-        let colsToAddDot = {};
+        this.points += this.dotsChain.length
+        this.pointsText.setText(`POINTS: ${this.points}`);
+
+        const colsToAddDot = {};
 
         this.dotsChain.forEach(dot => {
           const dotRow = dot.row;
